@@ -1,50 +1,134 @@
-# Welcome to your Expo app 👋
+# Gerador de Roteiros para Vídeo com IA
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicação criada em **React Native + Expo**, integrada à API do **Google Gemini**, para gerar roteiros completos e estruturados para vídeos em diferentes plataformas:
 
-## Get started
+- YouTube  
+- YouTube Shorts  
+- Instagram Reels  
+- TikTok  
 
-1. Install dependencies
+O usuário preenche informações simples sobre o vídeo e recebe um roteiro formatado e pronto para gravação.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## Tecnologias Utilizadas
 
-   ```bash
-   npx expo start
-   ```
+| Tecnologia | Descrição |
+|-----------|-----------|
+| React Native (Expo Router) | Interface e navegação |
+| Node.js + Express | Backend intermediário para segurança da API |
+| Google Gemini API | Geração do roteiro |
+| react-native-render-html | Exibição formatada do texto |
+| @react-native-picker/picker | Seleção de opções no formulário |
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Funcionalidades
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Formulário claro e objetivo
+- Escolha da plataforma de vídeo
+- Definição da duração (1 a 30 minutos)
+- Ajuste de palavras-chave e tom
+- Geração automática via IA
+- Visualização formatada do roteiro
+- Opção para gerar novamente
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Pré-requisitos
 
-```bash
-npm run reset-project
-```
+- Node.js instalado
+- Expo CLI instalado
+- Chave da API do Gemini obtida em:  
+  https://aistudio.google.com/app/apikey
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Configuração do Backend
 
-To learn more about developing your project with Expo, look at the following resources:
+Crie a pasta do backend:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+bash
+mkdir backend
+cd backend
+npm init -y
+npm install express cors dotenv @google/genai
 
-## Join the community
+Crie o arquivo .env dentro de backend/:
 
-Join our community of developers creating universal apps.
+GEMINI_API_KEY=SUA_CHAVE_AQUI
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+Crie o arquivo server.js:
+
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { GoogleGenAI } from "@google/genai";
+
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+app.post("/api/gemini", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    const result = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+    res.json({ result: result.text });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao chamar Gemini" });
+  }
+});
+
+app.listen(5500, () => console.log("Servidor rodando em http://localhost:5500"));
+
+
+Para executar:
+
+node server.js
+
+Executando o App Mobile
+
+Na pasta do projeto mobile:
+
+npm install
+npm start
+
+
+Abra no celular com Expo Go ou em um emulador Android/iOS.
+
+Estrutura Visual do Formulário
+
+Design limpo e centralizado
+
+Sem cores chamativas
+
+Foco em legibilidade
+
+Campos essenciais apenas
+
+Melhorias Futuras (Opcional)
+
+Exportar roteiro como PDF
+
+Histórico de roteiros
+
+Teleprompter integrado
+
+Login & projetos salvos
+
+Licença
+
+Este projeto é distribuído sob a licença MIT.
+
+Contribuição
+
+Sinta-se livre para abrir Issues, dar sugestões e enviar PRs.
+
+Se este projeto te ajudou, considere deixar uma estrela ⭐ no repositório.
